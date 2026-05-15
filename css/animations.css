@@ -1,0 +1,161 @@
+/* Keyframes */
+@keyframes fadeInUp  {
+   from  {
+     opacity: 0;
+     transform: translateY(30px);
+  }
+   to  {
+     opacity: 1;
+     transform: translateY(0);
+  }
+}
+@keyframes fadeIn  {
+   from  {
+     opacity: 0;
+  }
+   to  {
+     opacity: 1;
+  }
+}
+@keyframes slideInLeft  {
+   from  {
+     opacity: 0;
+     transform: translateX(-30px);
+  }
+   to  {
+     opacity: 1;
+     transform: translateX(0);
+  }
+}
+@keyframes pulse  {
+   0%, 100%  {
+     opacity: 1;
+  }
+   50%  {
+     opacity: 0.5;
+  }
+}
+@keyframes ticker  {
+   0%  {
+     transform: translateX(0);
+  }
+   100%  {
+     transform: translateX(-50%);
+  }
+}
+@keyframes radarPulse  {
+   0%  {
+     width: 0;
+     height: 0;
+     margin: 0;
+     opacity: .95;
+  }
+   70%  {
+     opacity: .28;
+  }
+   100%  {
+     width: 92%;
+     height: 92%;
+     margin: -46%;
+     opacity: 0;
+  }
+}
+@keyframes chartRise  {
+   0%  {
+     stroke-dashoffset: 700;
+     opacity: .25;
+  }
+   100%  {
+     stroke-dashoffset: 0;
+     opacity: 1;
+  }
+}
+@keyframes glowPulse  {
+   0%, 100%  {
+     box-shadow: 0 0 10px var(--cyan-dim);
+  }
+   50%  {
+     box-shadow: 0 0 30px var(--cyan);
+  }
+}
+@keyframes spin  {
+   to  {
+     transform: rotate(360deg);
+  }
+}
+@keyframes shimmer  {
+   0%  {
+     background-position: 100% 0;
+  }
+   100%  {
+     background-position: -100% 0;
+  }
+}
+@keyframes countUp  {
+   from  {
+     opacity: .5;
+     transform: translateY(8px);
+  }
+   to  {
+     opacity: 1;
+     transform: translateY(0);
+  }
+}
+@keyframes borderFlow  {
+   0%  {
+     background-position: 0% 50%;
+  }
+   50%  {
+     background-position: 100% 50%;
+  }
+   100%  {
+     background-position: 0% 50%;
+  }
+}
+.hero-text > *:nth-child(1) {
+  --delay:80ms
+}
+.hero-text > *:nth-child(2) {
+  --delay:180ms
+}
+.hero-text > *:nth-child(3) {
+  --delay:300ms
+}
+.hero-text > *:nth-child(4) {
+  --delay:420ms
+}
+.hero-text > *:nth-child(5) {
+  --delay:540ms
+}
+.hero-text > *:nth-child(6) {
+  --delay:660ms
+}
+.radar-visual {
+  animation:fadeIn 1s ease both, glowPulse 4s ease-in-out infinite 1s
+}
+.ticker-content {
+  animation:ticker 38s linear infinite
+}
+.card-hover,.product-card {
+  will-change:transform
+}
+.glow-pulse {
+  animation:glowPulse 3s ease-in-out infinite
+}
+.newsletter-box,.countdown-card {
+  background-size:200% 200%
+}
+.step-card:hover,.newsletter-box:hover,.countdown-card:hover {
+  animation:borderFlow 5s ease infinite
+}
+@media (prefers-reduced-motion: reduce) {
+  *,*::before,*::after {
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    scroll-behavior:auto!important;
+    transition-duration:.001ms!important
+  }
+  .ticker-content {
+    animation:none!important
+  }
+}
