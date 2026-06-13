@@ -1,0 +1,67 @@
+/* hero3d.css — magiczny hero 3D (WebGL mgławica + parallax głębi).
+   Izolowane od style.css, by łatwo cofnąć. Działa w ramach CSP ('self'). */
+
+/* Płótno WebGL pod treścią hero */
+.hero { perspective: 1400px; }
+.hero-webgl {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  display: block;
+  opacity: 0;
+  transition: opacity 1.1s ease;
+  pointer-events: none;
+}
+.hero-webgl.is-live { opacity: 1; }
+
+/* Winieta i orb NAD płótnem (kinowa głębia) */
+.hero::before { z-index: 1; }
+.hero-orb { z-index: 1; mix-blend-mode: screen; }
+
+/* Treść hero w warstwach 3D — parallax sterowany zmiennymi z JS */
+.hero-grid {
+  transform-style: preserve-3d;
+  transform:
+    rotateX(calc(var(--py, 0) * -2.2deg))
+    rotateY(calc(var(--px, 0) * 2.6deg));
+  transition: transform .25s cubic-bezier(.22,.61,.36,1);
+  will-change: transform;
+}
+.hero-copy   { transform: translateZ(40px); }
+.hero-visual { transform: translateZ(90px); }
+
+/* Radar unosi się w 3D + reaguje na kursor */
+.hero-visual .radar-visual {
+  transform:
+    translate3d(calc(var(--px, 0) * 14px), calc(var(--py, 0) * 14px), 0)
+    rotateX(calc(var(--py, 0) * 6deg))
+    rotateY(calc(var(--px, 0) * -8deg));
+  transition: transform .3s cubic-bezier(.22,.61,.36,1);
+  will-change: transform;
+}
+
+/* Delikatne „oddychanie" gradientowego h1 — magia bez ciężaru */
+.hero h1 .gradient-text {
+  background-size: 200% 200%;
+  animation: heroGradientShift 8s ease-in-out infinite;
+}
+@keyframes heroGradientShift {
+  0%,100% { background-position: 0% 50%; }
+  50%     { background-position: 100% 50%; }
+}
+
+/* MOBILE: WebGL zostaje (jest tanie), ale wyłączamy parallax 3D warstw (oszczędność) */
+@media (max-width: 900px) {
+  .hero-grid,
+  .hero-copy,
+  .hero-visual,
+  .hero-visual .radar-visual { transform: none !important; }
+}
+
+/* Reduced-motion: bez animacji, statyczny gradient pozostaje */
+@media (prefers-reduced-motion: reduce) {
+  .hero-webgl { display: none !important; }
+  .hero h1 .gradient-text { animation: none !important; }
+}
