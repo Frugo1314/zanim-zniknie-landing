@@ -6,6 +6,22 @@
 <title>Zanim Zniknie — Wyprzedź TikToka o miesiąc</title>
 <meta name="description" content="Łowcy, nie sklep. 10 viralowych produktów tygodniowo, ręcznie wybranych — zanim influencerzy zrobią z nich trend.">
 <meta name="theme-color" content="#04040A">
+<!-- SEO — przeniesione z oryginału, żeby sklep był widoczny w Google -->
+<meta name="keywords" content="gadżety, smart home, zigbee, matter, RFID, portfel RFID, EDC, prywatność, USB-C, sklep gadżetów Polska, zanim zniknie">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="geo.region" content="PL"><meta name="geo.placename" content="Polska">
+<link rel="canonical" href="https://zanim-zniknie.pl/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pl_PL">
+<meta property="og:site_name" content="Zanim Zniknie">
+<meta property="og:title" content="Zanim Zniknie — Wyprzedź TikToka o miesiąc">
+<meta property="og:description" content="Łowcy, nie sklep. 10 viralowych produktów tygodniowo, ręcznie wybranych — zanim influencerzy zrobią z nich trend. Wysyłka EU 24h, BLIK.">
+<meta property="og:url" content="https://zanim-zniknie.pl">
+<meta property="og:image" content="https://zanim-zniknie.pl/og-image.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Zanim Zniknie | Wyprzedź TikToka o miesiąc">
+<meta name="twitter:description" content="10 nowych odkryć każdy poniedziałek 18:00. Zanim influencerzy zrobią z tego trend.">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Store","name":"Zanim Zniknie","url":"https://zanim-zniknie.pl","slogan":"Łowcy, nie sklep","description":"Dropshipping viralowych produktów zanim staną się trendem na TikToku. Selekcja 0,1% rynku, wysyłka z EU w 24h.","paymentAccepted":"BLIK, Karta, Przelew","areaServed":"PL"}</script>
 
 <!-- Fonty: Display agresywny, Body czytelny, Mono techniczny -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -156,7 +172,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.04em;line
 .products__timer .flip__num{font-size:1.4rem}
 .product-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:50px}
 @media(max-width:760px){.product-grid{grid-template-columns:1fr}}
-.card{position:relative;aspect-ratio:1;border-radius:var(--r-card);overflow:hidden;background:var(--surface);transform-style:preserve-3d;transition:transform .15s var(--ease),box-shadow .35s;will-change:transform}
+.card{display:block;color:inherit;position:relative;aspect-ratio:1;border-radius:var(--r-card);overflow:hidden;background:var(--surface);transform-style:preserve-3d;transition:transform .15s var(--ease),box-shadow .35s;will-change:transform}
 .card__img{position:absolute;inset:0;background-size:cover;background-position:center;transform:scale(1.02) translateZ(0);transition:transform .6s var(--ease)}
 .card:hover .card__img{transform:scale(1.1)}
 .card__shimmer{position:absolute;inset:0;border-radius:var(--r-card);padding:1.5px;z-index:3;pointer-events:none;
@@ -413,11 +429,18 @@ const $$ = (s,c=document)=>[...c.querySelectorAll(s)];
 const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 
 /* ── DANE PRODUKTÓW (do adaptacji pod Shopify) ── */
+/* PRAWDZIWE produkty ze sklepu Shopify (zanim-zniknie.pl) — karty linkują do koszyka */
 const PRODUCTS=[
- {cat:"Prywatność",name:"USB Data Blocker",img:"https://images.unsplash.com/photo-1591290619762-7d34a2e2b51f?w=800&q=70",pin:"linear-gradient(135deg,#0a3d3a,#04040A)",neu:39,old:59,left:"6h 12m"},
- {cat:"Smart Home",name:"Czujnik ruchu Zigbee",img:"https://images.unsplash.com/photo-1558002038-1055907df827?w=800&q=70",pin:"linear-gradient(135deg,#3d0a2a,#04040A)",neu:79,old:129,left:"3h 41m"},
- {cat:"EDC",name:"Tytanowy multitool",img:"https://images.unsplash.com/photo-1530124566582-a618bc2615dc?w=800&q=70",pin:"linear-gradient(135deg,#3d2a0a,#04040A)",neu:129,old:189,left:"11h 02m",sold:true},
- {cat:"Aesthetic Tech",name:"Lampka zachód słońca",img:"https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=800&q=70",pin:"linear-gradient(135deg,#0a2a3d,#04040A)",neu:49,old:89,left:"1h 58m"}
+ {cat:"Prywatność",name:"Twoje dane są niepokojące",img:"https://www.techbook.de/data/uploads/2019/03/syncstop_nback.64_1552490105-2000x1192.png",url:"https://ngrfkd-2g.myshopify.com/products/twoje-dane-s-niepokoj-ce",pin:"linear-gradient(135deg,#0a3d3a,#04040A)",neu:5,old:7,left:"6h 11m"},
+ {cat:"Smart Home",name:"Nie stroimię się między językami",img:"https://1.bp.blogspot.com/-47x7-ixMwhw/VnbhZER7NaI/AAAAAAAABMM/yNkeEC4Sl2U/s1600/4.jpg",url:"https://ngrfkd-2g.myshopify.com/products/nie-stroimi-si-mi-dzy-j-zykami",pin:"linear-gradient(135deg,#3d0a2a,#04040A)",neu:120,old:174,left:"7h 43m"},
+ {cat:"EDC",name:"Portfel RFID z lokalizatorem AirTag",img:"https://image.ceneostatic.pl/data/products/150042356/c8110764-5a82-48c5-a9c4-6f82887c6cdd_i-slimpuro-znap-airtag-portfel-8-kart-kieszonka-na-monety-9-x-1-5-x-6-cm-ochrona-rfid.jpg",url:"https://ngrfkd-2g.myshopify.com/products/twoje-karty-w-bezw-adnym-rfid-owym-kontenerze-z-wi-fi-i-gps-obs-uguj-cym-usb-c-i",pin:"linear-gradient(135deg,#3d2a0a,#04040A)",neu:90,old:130,left:"1h 06m"},
+ {cat:"Smart Home",name:"Kamera nocna Wi-Fi HD 1080P",img:"https://a.allegroimg.com/original/112848/b375c1204303ae5cda60ba5f0fed/SONOFF-SNZB-03P-Inteligentny-Czujnik-Ruchu-Sensor-ZigBee-3-0-Na-Baterie",url:"https://ngrfkd-2g.myshopify.com/products/kamera-nocna-wi-fi-hd-1080p-z-rfid-i-gps-zasilana-jest-kamer-nocn-o-rozdzielczo-",pin:"linear-gradient(135deg,#0a2a3d,#04040A)",neu:150,old:218,left:"9h 08m"},
+ {cat:"Smart Home",name:"Smart Plug Matter — kontrola energii",img:"https://www.avatarcontrols.com/cdn/shop/products/eu-matter-plug.jpg?v=1679986288",url:"https://ngrfkd-2g.myshopify.com/products/twoja-energia-nie-jest-dost-pna-kamera-z-rfid-i-gps-nasza-nowa-karta-pami-ci-usb",pin:"linear-gradient(135deg,#0a3d3a,#04040A)",neu:200,old:290,left:"6h 39m"},
+ {cat:"EDC",name:"Klucz-scyzoryk smart 10 funkcji",img:"https://kross-europe.eu/media/catalog/product/cache/f7216f7f923814906488518497ac862b/T/4/T4CKU000161_KLUCZ_SCYZORYK_SMART_10_FUNKCJI_BK_1_e0c6.jpg",url:"https://ngrfkd-2g.myshopify.com/products/wiesz-e-to-ci-nie-ukradnie-korzystaj-z-naszej-nowej-karty-pami-ci-rfid-kt-ra-zap",pin:"linear-gradient(135deg,#3d0a2a,#04040A)",neu:5,old:7,left:"1h 34m"},
+ {cat:"Smart Home",name:"Ładowarka szybka QC3.0 do laptopa",img:"https://s.alicdn.com/@sc04/kf/Heab54b0ab1824591873c335c70fcdf7d0.jpg_960x960q80.jpg",url:"https://ngrfkd-2g.myshopify.com/products/adowarka-szybka-qc3-0-dla-laptopa-portable-adowarka-dla-laptopa-portatylnego-z-a",pin:"linear-gradient(135deg,#3d2a0a,#04040A)",neu:120,old:174,left:"4h 04m"},
+ {cat:"Prywatność",name:"Kamera bezpieczeństwa 4K Ultra HD Wi-Fi",img:"https://drive.gianhangvn.com/image/2024-08-04-110611-2684721j1660.jpg",url:"https://ngrfkd-2g.myshopify.com/products/kamer-bezpiecze-stwa-domowego-rfid-chowry-4k-ultra-hd-wi-fi-gps-monitorowanie-w-",pin:"linear-gradient(135deg,#0a2a3d,#04040A)",neu:150,old:218,left:"2h 29m"},
+ {cat:"Prywatność",name:"Portfel RFID Blocker — ochrona kart",img:"https://ae01.alicdn.com/kf/H26be984222f2447e9b40f6e171942dfaL.jpg",url:"https://ngrfkd-2g.myshopify.com/products/twoje-dane-s-bezpieczne-produkt-rfid-blocker-wallet-zapewnia-ochron-przed-nieaut",pin:"linear-gradient(135deg,#0a3d3a,#04040A)",neu:40,old:58,left:"7h 06m"},
+ {cat:"Prywatność",name:"Szyfrowany pendrive AES-256 64GB",img:"https://noerdic.no/cdn/shop/files/NRDICSecureEncryptedUSBFlashDrivePasswordProtectedLockingAES256BitUSBFlashDisk30forPersonalProtection64GBDefaultTitle_f9ed09d5-271f-44d9-a286-0cafdfed712d_1024x.jpg?v=1765373767",url:"https://ngrfkd-2g.myshopify.com/products/twoje-has-o-zosta-o-z-amane",pin:"linear-gradient(135deg,#3d0a2a,#04040A)",neu:120,old:174,left:"4h 07m"}
 ];
 const TESTI=[
  {n:"Kasia W.",t:"Zamówiłam w niedzielę, w wtorek miałam paczkę. Jakość lepsza niż na zdjęciach.",s:5},
@@ -496,19 +519,19 @@ buildTicker();
 /* ════ RENDER PRODUKTÓW ════ */
 const grid=$('[data-products]');
 grid.innerHTML=PRODUCTS.map(p=>`
- <article class="card${p.sold?' is-sold':''}" data-tilt data-hover>
+ <a class="card${p.sold?' is-sold':''}" href="${p.url}" target="_blank" rel="noopener" data-tilt data-hover aria-label="${p.name} — kup w sklepie">
    <div class="card__img" style="background-image:url('${p.img}'),${p.pin}"></div>
    <div class="card__shimmer"></div>
    <div class="card__glow"></div>
    <div class="card__grad"></div>
-   ${p.sold?'':`<div class="card__timer">⏳ ${p.left}</div>`}
+   ${p.sold?'':`<div class="card__timer">⏳ Zostało: ${p.left}</div>`}
    <div class="card__body">
      <span class="card__cat">${p.cat}</span>
      <h3 class="card__name">${p.name}</h3>
      <div class="card__price"><span class="new">${p.neu} zł</span><span class="old">${p.old} zł</span><span class="off">-${Math.round((1-p.neu/p.old)*100)}%</span></div>
    </div>
-   ${p.sold?'':`<button class="btn btn--primary card__add" data-magnetic data-hover>Dodaj do koszyka</button>`}
- </article>`).join('');
+   ${p.sold?'':`<span class="btn btn--primary card__add">Kup w sklepie →</span>`}
+ </a>`).join('');
 
 /* tilt 3D + grab cursor + particle burst */
 $$('.card[data-tilt]').forEach(card=>{
