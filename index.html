@@ -261,12 +261,35 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.04em;line
   .cursor-dot,.cursor-ring{display:none}
   .hero h1 .word>span{transform:none}
 }
+/* ════ PAZUR: grain, żywy timer, toast „upolowano" ════ */
+.grain{position:fixed;inset:0;z-index:9990;pointer-events:none;opacity:.06;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grainShift .5s steps(2) infinite}
+@keyframes grainShift{0%{transform:translate(0,0)}25%{transform:translate(-3%,2%)}50%{transform:translate(2%,-3%)}75%{transform:translate(-2%,-2%)}100%{transform:translate(0,0)}}
+.card__timer.is-low{color:var(--pink);border-color:rgba(255,45,120,.55);animation:pulseLow 1s ease-in-out infinite}
+@keyframes pulseLow{0%,100%{opacity:1;box-shadow:0 0 0 rgba(255,45,120,0)}50%{opacity:.78;box-shadow:0 0 14px rgba(255,45,120,.5)}}
+.toast{position:fixed;left:20px;bottom:20px;z-index:6500;max-width:330px;display:flex;align-items:center;gap:12px;
+  padding:12px 16px;border-radius:14px;background:rgba(10,10,20,.86);border:1px solid var(--glass-brd);backdrop-filter:blur(14px);
+  box-shadow:0 12px 40px rgba(0,0,0,.5);transform:translateY(170%);opacity:0;transition:transform .5s var(--ease),opacity .5s;
+  font:500 .84rem var(--f-mono);line-height:1.35}
+.toast.show{transform:translateY(0);opacity:1}
+.toast b{color:var(--mint);font-weight:700}
+.toast__dot{width:9px;height:9px;border-radius:50%;background:var(--mint);flex:none;animation:livePing 1.4s infinite}
+@keyframes livePing{0%{box-shadow:0 0 0 0 rgba(0,255,178,.6)}70%{box-shadow:0 0 0 10px rgba(0,255,178,0)}100%{box-shadow:0 0 0 0 rgba(0,255,178,0)}}
+@media(max-width:520px){.toast{left:12px;right:12px;bottom:12px;max-width:none}}
+@media(prefers-reduced-motion:reduce){.grain{animation:none}.toast{transition:opacity .3s}.toast__dot{animation:none}}
 </style>
 </head>
 <body>
 
 <!-- AMBIENT — globalna poświata marki + cząsteczki (łamie czerń, motyw „zanim zniknie") -->
 <canvas id="ambient-canvas" aria-hidden="true"></canvas>
+
+<!-- GRAIN — filmowa tekstura (pazur, premium-underground) -->
+<div class="grain" aria-hidden="true"></div>
+
+<!-- TOAST — live social-proof „upolowano" -->
+<div class="toast" data-toast role="status" aria-live="polite"><span class="toast__dot"></span><span data-toast-msg></span></div>
 
 <!-- CURSOR -->
 <div class="cursor-dot" data-cursor-dot></div>
@@ -449,6 +472,10 @@ const utmFor = (handle, source, medium) =>
 const handleOf = (url)=>{ const m=String(url||'').match(/\/products\/([^\/?#]+)/); return m?m[1]:null; };
 const storeLink = (url)=>{ const h=handleOf(url); return h ? utmFor(h,'zanim_zniknie','web') : url; };
 
+/* ── Countdown kart: "6h 11m" → sekundy → żywy tik ── */
+const parseLeft = (s)=>{ const m=String(s||'').match(/(\d+)\s*h\s*(\d+)/); return (m?+m[1]:0)*3600+(m?+m[2]:0)*60; };
+const fmtLeft = (s)=>{ const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60; return h>0?`${h}h ${m}m ${String(x).padStart(2,'0')}s`:`${m}:${String(x).padStart(2,'0')}`; };
+
 /* ── Ładowanie pikseli (tylko gdy ID ustawione) ── */
 (function loadAnalytics(){
   if(CFG.GA4_ID){
@@ -553,7 +580,8 @@ setInterval(tickCountdown,1000);tickCountdown();
 
 /* ════ LIVE VIEWERS ════ */
 const vEl=$('[data-viewers]');
-setInterval(()=>{ if(vEl) vEl.textContent=rand(47,312); },8000);
+let vCur=128;
+setInterval(()=>{ if(!vEl)return; vCur=Math.max(43,Math.min(338,vCur+rand(-9,12))); vEl.textContent=vCur; },2600);
 
 /* ════ TICKER (social proof) ════ */
 const tickerWrap=$('[data-ticker]');
@@ -572,7 +600,7 @@ grid.innerHTML=PRODUCTS.map(p=>`
    <div class="card__shimmer"></div>
    <div class="card__glow"></div>
    <div class="card__grad"></div>
-   ${p.sold?'':`<div class="card__timer">⏳ Zostało: ${p.left}</div>`}
+   ${p.sold?'':`<div class="card__timer" data-secs="${parseLeft(p.left)}">⏳ Zostało: <span class="t-v">${fmtLeft(parseLeft(p.left))}</span></div>`}
    <div class="card__body">
      <span class="card__cat">${p.cat}</span>
      <h3 class="card__name">${p.name}</h3>
@@ -600,6 +628,26 @@ $$('.card[data-tilt]').forEach(card=>{
     track('select_item',{item_name:name, item_id:handle, content_name:name, content_type:'product'}, 'ClickButton');
   });
 });
+
+/* ════ PAZUR: żywy countdown na kartach (tyka, czerwony puls < 1h) ════ */
+setInterval(()=>{
+  $$('.card__timer[data-secs]').forEach(el=>{
+    let s=Math.max(0,(+el.dataset.secs||0)-1); el.dataset.secs=s;
+    const v=$('.t-v',el); if(v)v.textContent=fmtLeft(s);
+    el.classList.toggle('is-low', s>0 && s<3600);
+  });
+},1000);
+
+/* ════ PAZUR: live toast „upolowano" (aktywny nudge, zatrzymuje scroll) ════ */
+const toastEl=$('[data-toast]'), toastMsg=$('[data-toast-msg]');
+function popToast(){
+  if(!toastEl) return;
+  const c=CITIES[rand(0,CITIES.length-1)], p=PRODUCTS[rand(0,PRODUCTS.length-1)].name;
+  toastMsg.innerHTML=`Ktoś z <b>${c}</b> właśnie upolował<br>${p}`;
+  toastEl.classList.add('show');
+  setTimeout(()=>toastEl.classList.remove('show'),5000);
+}
+setTimeout(function loop(){ popToast(); setTimeout(loop, rand(12000,20000)); }, 9000);
 
 /* ════ HERO HEADLINE — własny SplitText (słowa) ════ */
 const splitEl=$('[data-split]');
