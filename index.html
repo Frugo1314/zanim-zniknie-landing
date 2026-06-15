@@ -115,8 +115,9 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.04em;line
 
 /* ════ HERO ════ */
 .hero{position:relative;min-height:100svh;display:grid;align-items:center;overflow:hidden}
-#hero-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0}
-#ambient-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+#galaxy-canvas{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;pointer-events:none}
+/* treść nad globalnym canvasem galaktyki */
+main{position:relative;z-index:1}
 .hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
   background:radial-gradient(ellipse at 50% 60%,transparent 30%,var(--void) 92%)}
 .hero__inner{position:relative;z-index:2;padding-top:120px;text-align:center}
@@ -173,7 +174,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.04em;line
 .products__timer .flip__num{font-size:1.4rem}
 .product-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-top:50px}
 @media(max-width:760px){.product-grid{grid-template-columns:1fr}}
-.card{display:block;color:inherit;position:relative;aspect-ratio:1;border-radius:var(--r-card);overflow:hidden;background:var(--surface);transform-style:preserve-3d;transition:transform .15s var(--ease),box-shadow .35s;will-change:transform}
+.card{display:block;color:inherit;position:relative;aspect-ratio:1;border-radius:var(--r-card);overflow:hidden;background:rgba(13,13,26,.85);transform-style:preserve-3d;transition:transform .15s var(--ease),box-shadow .35s;will-change:transform}
 .card__img{position:absolute;inset:0;background-size:cover;background-position:center;transform:scale(1.02) translateZ(0);transition:transform .6s var(--ease)}
 .card:hover .card__img{transform:scale(1.1)}
 .card__shimmer{position:absolute;inset:0;border-radius:var(--r-card);padding:1.5px;z-index:3;pointer-events:none;
@@ -198,7 +199,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.04em;line
 .card.is-sold::after{content:"ZNIKNĘŁO";position:absolute;inset:0;z-index:6;display:grid;place-items:center;font:800 2rem var(--f-display);letter-spacing:.1em;color:var(--pink);background:rgba(4,4,10,.55);transform:rotate(-6deg)}
 
 /* ════ SEKCJA 4: DLACZEGO (horizontal pin) ════ */
-.why{position:relative;background:var(--surface)}
+.why{position:relative;background:transparent;z-index:1}
 .why__pin{height:100vh;display:flex;align-items:center;overflow:hidden}
 .why__track{display:flex;gap:0;will-change:transform}
 .why__panel{flex:0 0 100vw;height:100vh;display:grid;place-content:center;text-align:center;padding:0 8vw}
@@ -236,7 +237,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.04em;line
 .nl-success.show{opacity:1}
 
 /* ════ FOOTER ════ */
-.footer{position:relative;padding:90px 0 36px;border-top:1px solid var(--glass-brd);overflow:hidden}
+.footer{position:relative;z-index:1;padding:90px 0 36px;border-top:1px solid var(--glass-brd);overflow:hidden}
 #footer-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:.4}
 .footer__inner{position:relative;z-index:1}
 .footer__grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;margin-bottom:50px}
@@ -282,8 +283,8 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.04em;line
 </head>
 <body>
 
-<!-- AMBIENT — globalna poświata marki + cząsteczki (łamie czerń, motyw „zanim zniknie") -->
-<canvas id="ambient-canvas" aria-hidden="true"></canvas>
+<!-- GALAKTYKA — globalny Three.js canvas za całą stroną (lot przez kosmos, sterowany scrollem) -->
+<canvas id="galaxy-canvas" aria-hidden="true"></canvas>
 
 <!-- GRAIN — filmowa tekstura (pazur, premium-underground) -->
 <div class="grain" aria-hidden="true"></div>
@@ -330,7 +331,6 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.04em;line
 <main>
 <!-- ════ SEKCJA 1: HERO ════ -->
 <header class="hero" id="hero">
-  <canvas id="hero-canvas"></canvas>
   <div class="container hero__inner">
     <span class="hero__eyebrow"><span class="pulse-dot"></span> Nowa selekcja • poniedziałek 18:00</span>
     <h1 data-split>Wyprzedź TikToka <span class="grad-text" data-loop>o miesiąc.</span></h1>
@@ -674,89 +674,92 @@ if(loopEl && hasGSAP && !reduce){
     backgroundImage:'linear-gradient(110deg,#FF2D78,#00FFB2)'});
 }
 
-/* ════ THREE.JS — radar particles w hero ════ */
-function initHero(){
-  const canvas=$('#hero-canvas');
-  if(!window.THREE || reduce){ canvas.style.background='radial-gradient(ellipse at 60% 50%,rgba(0,255,178,.12),transparent 60%)'; return; }
+/* ════ GALAKTYKA — globalny Three.js, lot przez kosmos sterowany scrollem ════
+   Jeden fixed canvas za całą stroną. Cząsteczki NIE znikają przy scrollu —
+   kamera „leci" w dół pola, a system reaguje na progres:
+   hero (orbital) → produkty (rozejście na boki) → teksty (strumień + nebula)
+   → footer (horyzont). Sterowanie transformacjami całego systemu = 60fps. */
+function initGalaxy(){
+  const canvas=$('#galaxy-canvas'); if(!canvas) return;
+  if(!window.THREE || reduce){
+    canvas.style.background='radial-gradient(ellipse at 50% 18%,rgba(0,255,178,.10),transparent 55%),radial-gradient(ellipse at 75% 85%,rgba(255,45,120,.08),transparent 55%)';
+    return;
+  }
+  const MU=THREE.MathUtils;
   const scene=new THREE.Scene();
-  const cam=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,.1,100);cam.position.z=22;
+  const cam=new THREE.PerspectiveCamera(62,innerWidth/innerHeight,.1,260); cam.position.z=26;
   const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));
-  const N=touch?2200:4200, pos=new Float32Array(N*3), col=new Float32Array(N*3);
-  const c1=new THREE.Color(0x00FFB2), c2=new THREE.Color(0xFF2D78);
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+  renderer.setSize(innerWidth,innerHeight);
+
+  // główne cząsteczki: dysk w xz, rozciągnięty w pionie na całą stronę
+  const N=touch?2600:5200, pos=new Float32Array(N*3), col=new Float32Array(N*3);
+  const cMint=new THREE.Color(0x00FFB2), cPink=new THREE.Color(0xFF2D78), cWhite=new THREE.Color(0xffffff);
   for(let i=0;i<N;i++){
-    const a=Math.random()*Math.PI*2, rr=Math.pow(Math.random(),.5)*16;
-    pos[i*3]=Math.cos(a)*rr; pos[i*3+1]=(Math.random()-.5)*4; pos[i*3+2]=Math.sin(a)*rr;
-    const c=c1.clone().lerp(c2,rr/16);
+    const a=Math.random()*Math.PI*2, rr=Math.pow(Math.random(),.6)*20;
+    pos[i*3]=Math.cos(a)*rr; pos[i*3+1]=(Math.random()-.5)*70; pos[i*3+2]=Math.sin(a)*rr-Math.random()*14;
+    const u=Math.random(), c=u<.55?cWhite.clone():(u<.8?cMint.clone():cPink.clone());
     col[i*3]=c.r;col[i*3+1]=c.g;col[i*3+2]=c.b;
   }
   const geo=new THREE.BufferGeometry();
   geo.setAttribute('position',new THREE.BufferAttribute(pos,3));
   geo.setAttribute('color',new THREE.BufferAttribute(col,3));
-  const mat=new THREE.PointsMaterial({size:.09,vertexColors:true,transparent:true,opacity:.9,depthWrite:false,blending:THREE.AdditiveBlending});
-  const pts=new THREE.Points(geo,mat);scene.add(pts);
-  // pierścień radaru
-  const ringGeo=new THREE.RingGeometry(15.5,16,80);
-  const ringMat=new THREE.MeshBasicMaterial({color:0x00FFB2,transparent:true,opacity:.12,side:THREE.DoubleSide});
-  const ring=new THREE.Mesh(ringGeo,ringMat);ring.rotation.x=Math.PI/2;scene.add(ring);
+  const mat=new THREE.PointsMaterial({size:.11,vertexColors:true,transparent:true,opacity:.92,depthWrite:false,sizeAttenuation:true,blending:THREE.AdditiveBlending});
+  const pts=new THREE.Points(geo,mat); scene.add(pts);
+
+  // nebula: duże rozmyte kulki mint/pink/gold (rozbłyskują w sekcji tekstów)
+  const K=touch?16:30, np=new Float32Array(K*3), nc=new Float32Array(K*3);
+  const cGold=new THREE.Color(0xFFD700), neb=[cMint,cPink,cGold];
+  for(let i=0;i<K;i++){
+    np[i*3]=(Math.random()-.5)*50; np[i*3+1]=(Math.random()-.5)*70; np[i*3+2]=-10-Math.random()*22;
+    const c=neb[i%3]; nc[i*3]=c.r;nc[i*3+1]=c.g;nc[i*3+2]=c.b;
+  }
+  const ngeo=new THREE.BufferGeometry();
+  ngeo.setAttribute('position',new THREE.BufferAttribute(np,3));
+  ngeo.setAttribute('color',new THREE.BufferAttribute(nc,3));
+  const nmat=new THREE.PointsMaterial({size:13,vertexColors:true,transparent:true,opacity:0,depthWrite:false,sizeAttenuation:true,blending:THREE.AdditiveBlending});
+  const nebula=new THREE.Points(ngeo,nmat); scene.add(nebula);
+
+  // tint koloru per sekcja (mnoży vertexColors): hero→produkty→teksty→footer
+  const tints=[new THREE.Color(0xffdce8), new THREE.Color(0xc4ffec), new THREE.Color(0xfff0c2), new THREE.Color(0xb6ffe9)];
+  const tintFor=p=>tints[p<.25?0:p<.5?1:p<.78?2:3];
+
+  // scroll progress: ScrollTrigger scrub (jak w spec), fallback na scroll
+  let target=0, sp=0;
+  if(window.gsap && window.ScrollTrigger){
+    ScrollTrigger.create({trigger:document.body,start:'top top',end:'bottom bottom',scrub:1,onUpdate:self=>{target=self.progress;}});
+  } else {
+    addEventListener('scroll',()=>{const h=document.documentElement;target=h.scrollTop/((h.scrollHeight-h.clientHeight)||1);},{passive:true});
+  }
 
   let mxn=0,myn=0;
-  addEventListener('pointermove',e=>{mxn=(e.clientX/innerWidth-.5);myn=(e.clientY/innerHeight-.5);},{passive:true});
-  let running=true;
-  const io=new IntersectionObserver(es=>{running=es[0].isIntersecting;if(running)anim();});io.observe(canvas);
-  addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
-  renderer.setSize(innerWidth,innerHeight);
+  addEventListener('pointermove',e=>{mxn=e.clientX/innerWidth-.5;myn=e.clientY/innerHeight-.5;},{passive:true});
+  addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);},{passive:true});
+
+  let run=true; document.addEventListener('visibilitychange',()=>{run=!document.hidden;if(run)anim();});
   const t0=performance.now();
   function anim(){
-    if(!running)return;
+    if(!run)return;
     const t=(performance.now()-t0)/1000;
-    pts.rotation.y=t*.05;
-    pts.position.y=Math.sin(t*1.2)*.3;                 // puls jak sonar
-    const pulse=1+Math.sin(t*2.1)*.04;mat.size=.09*pulse;
-    cam.position.x+=(mxn*6-cam.position.x)*.04;
-    cam.position.y+=(-myn*4-cam.position.y)*.04;
-    cam.lookAt(0,0,0);
+    sp+=(target-sp)*.07;
+    const spread=MU.smoothstep(sp,.20,.50)*(1-MU.smoothstep(sp,.80,.96)); // produkty: na boki
+    const stream=MU.smoothstep(sp,.50,.60)*(1-MU.smoothstep(sp,.74,.84)); // teksty: strumień
+    const gather=MU.smoothstep(sp,.86,1);                                 // footer: horyzont
+    pts.rotation.y=t*.04+sp*.5+stream*t*.12;
+    pts.rotation.z=spread*.12;
+    pts.scale.set(1+spread*.75,(1+stream*.15)*(1-gather*.6),1+spread*.25);
+    pts.position.x=Math.sin(t*.4)*stream*4;
+    const camY=-sp*16;                                   // kamera leci w dół → kulki zawsze widoczne
+    cam.position.x+=(mxn*5-cam.position.x)*.04;
+    cam.position.y+=((camY-myn*3)-cam.position.y)*.05;
+    cam.lookAt(0,camY-gather*10,0);
+    nmat.opacity+=(.22*stream-nmat.opacity)*.06;
+    nebula.rotation.y=-t*.02;
+    mat.color.lerp(tintFor(sp),.04);
     renderer.render(scene,cam);
     requestAnimationFrame(anim);
   }
   anim();
-}
-
-/* ════ AMBIENT — globalna poświata marki + dryfujące cząsteczki ════
-   Łamie dominację czerni na CAŁEJ stronie (fixed, za treścią) i niesie
-   vibe „latających kulek" poza hero. Cząsteczki pojawiają się i znikają
-   = motyw marki „zanim zniknie". GPU-lekkie, pauzuje przy ukrytej karcie. */
-function initAmbient(){
-  const canvas=$('#ambient-canvas'); if(!canvas) return;
-  if(reduce){ canvas.style.background='radial-gradient(ellipse at 20% 12%,rgba(0,255,178,.07),transparent 45%),radial-gradient(ellipse at 85% 82%,rgba(255,45,120,.06),transparent 45%)'; return; }
-  const ctx=canvas.getContext('2d'); let w,h; const dpr=Math.min(devicePixelRatio,1.5);
-  function size(){w=canvas.width=innerWidth*dpr;h=canvas.height=innerHeight*dpr;canvas.style.width=innerWidth+'px';canvas.style.height=innerHeight+'px';}
-  size(); addEventListener('resize',size,{passive:true});
-  const blobs=[{c:'0,255,178',sp:.00006,ph:0,a:.10},{c:'255,45,120',sp:.00008,ph:2.2,a:.08},{c:'0,255,178',sp:.00005,ph:4.1,a:.05}];
-  const N=touch?20:44, ps=[];
-  const spawn=()=>({x:Math.random()*w, y:h+Math.random()*h*.25, r:(Math.random()*1.5+.4)*dpr, vy:-(Math.random()*.22+.06)*dpr, life:0, max:Math.random()*420+260, mint:Math.random()>.42});
-  for(let i=0;i<N;i++){const p=spawn();p.life=Math.random()*p.max;ps.push(p);}
-  let run=true; document.addEventListener('visibilitychange',()=>{run=!document.hidden;if(run)draw();});
-  function draw(){
-    if(!run)return; const t=performance.now();
-    ctx.clearRect(0,0,w,h);
-    blobs.forEach(b=>{
-      const x=(.5+Math.cos(t*b.sp+b.ph)*.4)*w, y=(.5+Math.sin(t*b.sp*1.25+b.ph)*.4)*h;
-      const g=ctx.createRadialGradient(x,y,0,x,y,Math.max(w,h)*.55);
-      g.addColorStop(0,`rgba(${b.c},${b.a})`); g.addColorStop(1,'rgba(0,0,0,0)');
-      ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
-    });
-    ps.forEach((p,i)=>{
-      p.life++; p.y+=p.vy; p.x+=Math.sin(t*.0003+i)*.15*dpr;
-      if(p.life>=p.max || p.y<-10){Object.assign(p,spawn()); return;}
-      const alpha=Math.sin(Math.min(1,p.life/p.max)*Math.PI)*.5; // 0 → szczyt → 0 (zniknie)
-      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-      ctx.fillStyle=p.mint?`rgba(0,255,178,${alpha})`:`rgba(255,45,120,${alpha*.8})`;
-      ctx.fill();
-    });
-    requestAnimationFrame(draw);
-  }
-  draw();
 }
 
 /* ════ GENERIC mesh-gradient canvas (newsletter + footer) ════ */
@@ -856,8 +859,7 @@ function runLoader(){
     if(p<1){requestAnimationFrame(step);}else{loader.classList.add('is-done');start();}})();
 }
 function start(){
-  initAmbient();
-  initHero();
+  initGalaxy();
   meshGradient($('#mesh-canvas'),.6);
   meshGradient($('#footer-canvas'),.4);
   initGSAP();
