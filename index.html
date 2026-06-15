@@ -287,33 +287,6 @@ main{position:relative;z-index:1}
 @keyframes livePing{0%{box-shadow:0 0 0 0 rgba(0,255,178,.6)}70%{box-shadow:0 0 0 10px rgba(0,255,178,0)}100%{box-shadow:0 0 0 0 rgba(0,255,178,0)}}
 @media(max-width:520px){.toast{left:12px;right:12px;bottom:12px;max-width:none}}
 @media(prefers-reduced-motion:reduce){.grain{animation:none}.toast{transition:opacity .3s}.toast__dot{animation:none}}
-/* ════ MINI-GRA: strzelanie w kulki (sekcja produktów) ════ */
-#game-canvas{position:fixed;inset:0;width:100vw;height:100vh;z-index:50;pointer-events:none;opacity:0;transition:opacity .5s}
-#game-canvas.active{opacity:1}
-.screenfx{position:fixed;inset:0;z-index:40;pointer-events:none;opacity:0;background:radial-gradient(ellipse at center,transparent 38%,rgba(255,45,120,.28))}
-.screenfx.on{animation:screenPulse .6s}
-@keyframes screenPulse{0%,100%{opacity:0}50%{opacity:1}}
-.ghud{position:fixed;top:84px;right:18px;z-index:6400;display:none;flex-direction:column;align-items:flex-end;gap:1px;font-family:var(--f-mono);pointer-events:none;text-shadow:0 0 12px rgba(0,255,178,.5)}
-.ghud.show{display:flex}
-.ghud__score{font-size:1.9rem;font-weight:700;color:var(--mint);line-height:1}
-.ghud__lbl{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted)}
-.ghud__combo{font-size:1rem;color:var(--gold);font-weight:700;min-height:1.2em}
-.reward{position:fixed;top:76px;left:50%;transform:translate(-50%,-180%);z-index:6600;padding:12px 22px;border-radius:99px;
-  background:rgba(10,10,20,.92);border:1px solid var(--mint);backdrop-filter:blur(14px);box-shadow:0 0 30px rgba(0,255,178,.35);
-  font:600 .92rem var(--f-mono);color:#fff;white-space:nowrap;opacity:0;transition:transform .5s var(--ease),opacity .5s;pointer-events:none}
-.reward.show{transform:translate(-50%,0);opacity:1}
-.reward b{color:var(--mint)}
-.gfx{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);z-index:6550;pointer-events:none;font:800 2rem var(--f-display);color:#fff;text-shadow:0 0 18px rgba(0,0,0,.6);animation:gfxPop 1.3s var(--ease) forwards}
-@keyframes gfxPop{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}20%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-95%) scale(1)}}
-.gfx--gold{color:var(--gold)}.gfx--mint{color:var(--mint)}.gfx--combo{color:var(--gold)}.gfx--hot{color:var(--pink)}.gfx--master{color:var(--gold);font-size:2.7rem}
-.gfx--bad{color:#ff5050;font-size:1.4rem}.gfx--miss{font-size:1.3rem;color:rgba(255,255,255,.55);animation:gfxMiss .5s forwards}
-@keyframes gfxMiss{0%{opacity:.9;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.7)}}
-body.is-shooting{cursor:none}
-body.is-shooting [data-cursor-ring]{width:34px;height:34px;border-color:var(--mint);box-shadow:0 0 14px rgba(0,255,178,.6)}
-[data-cursor-ring].is-fire{animation:fireRing .18s}
-@keyframes fireRing{0%{transform:translate(var(--rx,0),var(--ry,0)) scale(1)}50%{transform:scale(.6)}100%{transform:scale(1)}}
-@media(max-width:600px){.ghud{top:68px;right:10px}.reward{font-size:.76rem;white-space:normal;max-width:92vw;text-align:center}}
-@media(prefers-reduced-motion:reduce){#game-canvas,.screenfx{display:none}}
 </style>
 </head>
 <body>
@@ -326,16 +299,6 @@ body.is-shooting [data-cursor-ring]{width:34px;height:34px;border-color:var(--mi
 
 <!-- TOAST — live social-proof „upolowano" -->
 <div class="toast" data-toast role="status" aria-live="polite"><span class="toast__dot"></span><span data-toast-msg></span></div>
-
-<!-- MINI-GRA — strzelanie w kulki w sekcji produktów -->
-<canvas id="game-canvas" aria-hidden="true"></canvas>
-<div class="screenfx" data-screenfx aria-hidden="true"></div>
-<div class="ghud" data-ghud aria-hidden="true">
-  <div class="ghud__score" data-g-score>0</div>
-  <div class="ghud__lbl">punktów łowcy</div>
-  <div class="ghud__combo" data-g-combo></div>
-</div>
-<div class="reward" data-reward role="status" aria-live="polite"></div>
 
 <!-- CURSOR -->
 <div class="cursor-dot" data-cursor-dot></div>
@@ -694,97 +657,6 @@ function popToast(){
 }
 setTimeout(function loop(){ popToast(); setTimeout(loop, rand(12000,20000)); }, 9000);
 
-/* ════ MINI-GRA: strzelaj w kulki → punkty → kody zniżek ════
-   Canvas2D overlay (pointer-events:none) — strzał liczony w JS, więc karty
-   produktów pozostają klikalne (klik w kartę = sprzedaż). Aktywna tylko gdy
-   sekcja #produkty jest w viewport. UWAGA: kody muszą istnieć w Shopify. */
-function initGame(){
-  const canvas=$('#game-canvas'), sec=$('#produkty');
-  if(!canvas||!sec||reduce) return;
-  const ctx=canvas.getContext('2d'); let w,h; const dpr=Math.min(devicePixelRatio,2);
-  function size(){w=canvas.width=innerWidth*dpr;h=canvas.height=innerHeight*dpr;canvas.style.width=innerWidth+'px';canvas.style.height=innerHeight+'px';}
-  size(); addEventListener('resize',size,{passive:true});
-
-  const TYPES=[
-    {k:'white',col:'255,255,255',pts:10, weight:55},
-    {k:'mint', col:'0,255,178',  pts:25, weight:26},
-    {k:'pink', col:'255,45,120', pts:50, weight:13},
-    {k:'red',  col:'255,70,70',  pts:-20,weight:14, trap:true},
-    {k:'gold', col:'255,215,0',  pts:100,weight:5,  jackpot:true},
-  ];
-  const totW=TYPES.reduce((s,t)=>s+t.weight,0);
-  function pick(){ let r=Math.random()*totW; for(const t of TYPES){ if((r-=t.weight)<0) return t; } return TYPES[0]; }
-
-  let balls=[], parts=[], active=false, raf=0, spawnTimer=0, announced=false;
-  let score=+(localStorage.getItem('zz_score')||0), combo=0;
-  const unlocked=new Set(JSON.parse(localStorage.getItem('zz_codes')||'[]'));
-  const REWARDS=[{p:100,code:'ZZ5',txt:'5% zniżki'},{p:250,code:'ZZ10',txt:'10% zniżki'},{p:500,code:'ZZ15',txt:'15% zniżki'},{p:1000,code:'ZZDOSTAWA',txt:'darmowa dostawa'}];
-  const hud=$('[data-ghud]'), hudScore=$('[data-g-score]'), hudCombo=$('[data-g-combo]'), rewardEl=$('[data-reward]'), screenfx=$('[data-screenfx]');
-  const mult=()=> combo>=10?4:combo>=5?3:combo>=3?2:1;
-  function paintHud(){ if(hudScore)hudScore.textContent=score; if(hudCombo)hudCombo.textContent= combo>=3?('COMBO x'+mult()):''; }
-
-  let actx=null;
-  function pop(freq,type){ try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); const o=actx.createOscillator(),g=actx.createGain(); o.type=type||'sine'; o.frequency.value=freq; o.connect(g); g.connect(actx.destination); const n=actx.currentTime; g.gain.setValueAtTime(.0001,n); g.gain.exponentialRampToValueAtTime(.22,n+.01); g.gain.exponentialRampToValueAtTime(.0001,n+.16); o.start(n); o.stop(n+.18);}catch(e){} }
-
-  function gfx(txt,cls,x,y){ const el=document.createElement('div'); el.className='gfx '+(cls||''); el.textContent=txt; if(x!=null){el.style.left=x+'px';el.style.top=y+'px';} document.body.appendChild(el); setTimeout(()=>el.remove(),1300); }
-  function banner(html,ms){ if(!rewardEl)return; rewardEl.innerHTML=html; rewardEl.classList.add('show'); setTimeout(()=>rewardEl.classList.remove('show'),ms||5000); }
-  function checkRewards(){ REWARDS.forEach(r=>{ if(score>=r.p && !unlocked.has(r.code)){ unlocked.add(r.code); localStorage.setItem('zz_codes',JSON.stringify([...unlocked])); banner(`🎁 Zniżka odblokowana: <b>${r.txt}</b> — kod <b>${r.code}</b>`,6000); pop(900,'triangle'); } }); }
-
-  function spawn(){ if(balls.length>22) return; const t=pick(); balls.push({t,x:rand(50,innerWidth-50)*dpr,y:-20*dpr,r:rand(12,20)*dpr,vy:rand(110,210)/60*dpr,vx:rand(-18,18)/60*dpr,ph:Math.random()*6}); }
-  function burst(x,y,col){ for(let i=0;i<20;i++) parts.push({x,y,vx:(Math.random()-.5)*7*dpr,vy:(Math.random()-.7)*7*dpr,life:1,col,s:(Math.random()*2.4+1)*dpr}); }
-
-  function shoot(cx,cy,e){
-    if(!active) return;
-    const ring=$('[data-cursor-ring]'); if(ring){ring.classList.add('is-fire'); setTimeout(()=>ring.classList.remove('is-fire'),180);}
-    const X=cx*dpr, Y=cy*dpr; let hit=null,hd=1e9;
-    balls.forEach(b=>{ const d=Math.hypot(b.x-X,b.y-Y); if(d<b.r+26*dpr && d<hd){hd=d;hit=b;} });
-    if(!hit){
-      // trafienie liczy się zawsze; pudło ignorujemy gdy klik w UI (link/przycisk = sprzedaż)
-      if(e && e.target.closest('a,button,input,label,[data-hover]')) return;
-      combo=0; paintHud(); gfx('✕','gfx--miss',cx,cy); return;
-    }
-    balls=balls.filter(b=>b!==hit); burst(hit.x,hit.y,hit.t.col);
-    if(hit.t.trap){ combo=0; score=Math.max(0,score+hit.t.pts); pop(150,'sawtooth'); gfx('−20 ⚠','gfx--bad'); }
-    else{
-      combo++; const m=mult(); score+=hit.t.pts*m;
-      pop(hit.t.jackpot?1046:440+combo*38,'sine');
-      if(hit.t.jackpot) gfx('JACKPOT! +100','gfx--gold');
-      else if(m>1) gfx('+'+(hit.t.pts*m),'gfx--mint');
-      if(combo===3) gfx('COMBO x2','gfx--combo');
-      else if(combo===5){ gfx('HOT STREAK 🔥','gfx--hot'); if(screenfx){screenfx.classList.remove('on');void screenfx.offsetWidth;screenfx.classList.add('on');} }
-      else if(combo===10) gfx('ŁOWCA MASTER 🏆','gfx--master');
-    }
-    localStorage.setItem('zz_score',score); paintHud(); checkRewards();
-  }
-
-  function frame(){
-    if(!active){ raf=0; return; }
-    ctx.clearRect(0,0,w,h);
-    for(let i=balls.length-1;i>=0;i--){ const b=balls[i]; b.y+=b.vy; b.x+=b.vx; b.ph+=.05;
-      if(b.y>h+30*dpr){ balls.splice(i,1); continue; }
-      const pl=1+Math.sin(b.ph)*.12, R=b.r*pl;
-      const g=ctx.createRadialGradient(b.x,b.y,0,b.x,b.y,R*2);
-      g.addColorStop(0,`rgba(${b.t.col},.95)`); g.addColorStop(.5,`rgba(${b.t.col},.45)`); g.addColorStop(1,`rgba(${b.t.col},0)`);
-      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(b.x,b.y,R*2,0,7); ctx.fill();
-      ctx.fillStyle=`rgba(${b.t.col},1)`; ctx.beginPath(); ctx.arc(b.x,b.y,R*.6,0,7); ctx.fill();
-    }
-    for(let i=parts.length-1;i>=0;i--){ const p=parts[i]; p.x+=p.vx;p.y+=p.vy;p.vy+=.18*dpr;p.life-=.025; if(p.life<=0){parts.splice(i,1);continue;} ctx.globalAlpha=Math.max(0,p.life); ctx.fillStyle=`rgb(${p.col})`; ctx.fillRect(p.x,p.y,p.s,p.s); }
-    ctx.globalAlpha=1;
-    raf=requestAnimationFrame(frame);
-  }
-
-  function setActive(on){
-    if(on===active) return; active=on;
-    canvas.classList.toggle('active',on); hud&&hud.classList.toggle('show',on);
-    document.body.classList.toggle('is-shooting',on && !touch);
-    if(on){ paintHud(); if(!announced){announced=true; banner('🎯 Strzelaj w kulki — zbierz punkty na zniżkę!',4200);} spawnTimer=setInterval(spawn,620); if(!raf)frame(); }
-    else{ clearInterval(spawnTimer); balls=[]; }
-  }
-  new IntersectionObserver(es=>setActive(es[0].isIntersecting),{threshold:.25}).observe(sec);
-  addEventListener('click',e=>{ if(active) shoot(e.clientX,e.clientY,e); });
-  document.addEventListener('visibilitychange',()=>{ if(document.hidden) setActive(false); });
-}
-
 /* ════ HERO HEADLINE — własny SplitText (słowa) ════ */
 const splitEl=$('[data-split]');
 if(splitEl){
@@ -997,7 +869,6 @@ function runLoader(){
 }
 function start(){
   initGalaxy();
-  initGame();
   meshGradient($('#mesh-canvas'),.6);
   meshGradient($('#footer-canvas'),.4);
   initGSAP();
