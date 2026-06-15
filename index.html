@@ -7,7 +7,7 @@
 <meta name="description" content="Łowcy, nie sklep. 10 viralowych produktów tygodniowo, ręcznie wybranych — zanim influencerzy zrobią z nich trend.">
 <meta name="theme-color" content="#04040A">
 <!-- SEO — przeniesione z oryginału, żeby sklep był widoczny w Google -->
-<meta name="keywords" content="gadżety, smart home, zigbee, matter, RFID, portfel RFID, EDC, prywatność, USB-C, sklep gadżetów Polska, zanim zniknie">
+<meta name="keywords" content="gadżety, beauty, aesthetic tech, CleanTok, podgrzewana zalotka, mini drukarka termiczna, gadżety sprzątające, viralowe gadżety, sklep gadżetów Polska, zanim zniknie">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="geo.region" content="PL"><meta name="geo.placename" content="Polska">
 <link rel="canonical" href="https://zanim-zniknie.pl/">
@@ -514,16 +514,9 @@ function track(ga4Event, params, ttEvent){
 /* ── DANE PRODUKTÓW (do adaptacji pod Shopify) ── */
 /* PRAWDZIWE produkty ze sklepu Shopify (zanim-zniknie.pl) — karty linkują do koszyka */
 const PRODUCTS=[
- {cat:"Prywatność",name:"Twoje dane są niepokojące",img:"https://www.techbook.de/data/uploads/2019/03/syncstop_nback.64_1552490105-2000x1192.png",url:"https://ngrfkd-2g.myshopify.com/products/twoje-dane-s-niepokoj-ce",pin:"linear-gradient(135deg,#0a3d3a,#04040A)",neu:5,old:7,left:"6h 11m"},
- {cat:"Smart Home",name:"Nie stroimię się między językami",img:"https://1.bp.blogspot.com/-47x7-ixMwhw/VnbhZER7NaI/AAAAAAAABMM/yNkeEC4Sl2U/s1600/4.jpg",url:"https://ngrfkd-2g.myshopify.com/products/nie-stroimi-si-mi-dzy-j-zykami",pin:"linear-gradient(135deg,#3d0a2a,#04040A)",neu:120,old:174,left:"7h 43m"},
- {cat:"EDC",name:"Portfel RFID z lokalizatorem AirTag",img:"https://image.ceneostatic.pl/data/products/150042356/c8110764-5a82-48c5-a9c4-6f82887c6cdd_i-slimpuro-znap-airtag-portfel-8-kart-kieszonka-na-monety-9-x-1-5-x-6-cm-ochrona-rfid.jpg",url:"https://ngrfkd-2g.myshopify.com/products/twoje-karty-w-bezw-adnym-rfid-owym-kontenerze-z-wi-fi-i-gps-obs-uguj-cym-usb-c-i",pin:"linear-gradient(135deg,#3d2a0a,#04040A)",neu:90,old:130,left:"1h 06m"},
- {cat:"Smart Home",name:"Kamera nocna Wi-Fi HD 1080P",img:"https://a.allegroimg.com/original/112848/b375c1204303ae5cda60ba5f0fed/SONOFF-SNZB-03P-Inteligentny-Czujnik-Ruchu-Sensor-ZigBee-3-0-Na-Baterie",url:"https://ngrfkd-2g.myshopify.com/products/kamera-nocna-wi-fi-hd-1080p-z-rfid-i-gps-zasilana-jest-kamer-nocn-o-rozdzielczo-",pin:"linear-gradient(135deg,#0a2a3d,#04040A)",neu:150,old:218,left:"9h 08m"},
- {cat:"Smart Home",name:"Smart Plug Matter — kontrola energii",img:"https://www.avatarcontrols.com/cdn/shop/products/eu-matter-plug.jpg?v=1679986288",url:"https://ngrfkd-2g.myshopify.com/products/twoja-energia-nie-jest-dost-pna-kamera-z-rfid-i-gps-nasza-nowa-karta-pami-ci-usb",pin:"linear-gradient(135deg,#0a3d3a,#04040A)",neu:200,old:290,left:"6h 39m"},
- {cat:"EDC",name:"Klucz-scyzoryk smart 10 funkcji",img:"https://kross-europe.eu/media/catalog/product/cache/f7216f7f923814906488518497ac862b/T/4/T4CKU000161_KLUCZ_SCYZORYK_SMART_10_FUNKCJI_BK_1_e0c6.jpg",url:"https://ngrfkd-2g.myshopify.com/products/wiesz-e-to-ci-nie-ukradnie-korzystaj-z-naszej-nowej-karty-pami-ci-rfid-kt-ra-zap",pin:"linear-gradient(135deg,#3d0a2a,#04040A)",neu:5,old:7,left:"1h 34m"},
- {cat:"Smart Home",name:"Ładowarka szybka QC3.0 do laptopa",img:"https://s.alicdn.com/@sc04/kf/Heab54b0ab1824591873c335c70fcdf7d0.jpg_960x960q80.jpg",url:"https://ngrfkd-2g.myshopify.com/products/adowarka-szybka-qc3-0-dla-laptopa-portable-adowarka-dla-laptopa-portatylnego-z-a",pin:"linear-gradient(135deg,#3d2a0a,#04040A)",neu:120,old:174,left:"4h 04m"},
- {cat:"Prywatność",name:"Kamera bezpieczeństwa 4K Ultra HD Wi-Fi",img:"https://drive.gianhangvn.com/image/2024-08-04-110611-2684721j1660.jpg",url:"https://ngrfkd-2g.myshopify.com/products/kamer-bezpiecze-stwa-domowego-rfid-chowry-4k-ultra-hd-wi-fi-gps-monitorowanie-w-",pin:"linear-gradient(135deg,#0a2a3d,#04040A)",neu:150,old:218,left:"2h 29m"},
- {cat:"Prywatność",name:"Portfel RFID Blocker — ochrona kart",img:"https://ae01.alicdn.com/kf/H26be984222f2447e9b40f6e171942dfaL.jpg",url:"https://ngrfkd-2g.myshopify.com/products/twoje-dane-s-bezpieczne-produkt-rfid-blocker-wallet-zapewnia-ochron-przed-nieaut",pin:"linear-gradient(135deg,#0a3d3a,#04040A)",neu:40,old:58,left:"7h 06m"},
- {cat:"Prywatność",name:"Szyfrowany pendrive AES-256 64GB",img:"https://noerdic.no/cdn/shop/files/NRDICSecureEncryptedUSBFlashDrivePasswordProtectedLockingAES256BitUSBFlashDisk30forPersonalProtection64GBDefaultTitle_f9ed09d5-271f-44d9-a286-0cafdfed712d_1024x.jpg?v=1765373767",url:"https://ngrfkd-2g.myshopify.com/products/twoje-has-o-zosta-o-z-amane",pin:"linear-gradient(135deg,#3d0a2a,#04040A)",neu:120,old:174,left:"4h 07m"}
+ {cat:"Aesthetic Tech",name:"Mini drukarka termiczna Bluetooth – bezatramentowa i kompaktowa",img:"https://a.allegroimg.com/original/11f949/6891318f4c74a574d9caf02da1d8/PRZENOSNA-MINI-DRUKARKA-TERMICZNA-MOBILNA-DO-PARAGONOW-BLUETOOTH-USB",handle:"mini-drukarka-termiczna-bluetooth-bezatramentowa-i-kompaktowa",url:"https://ngrfkd-2g.myshopify.com/products/mini-drukarka-termiczna-bluetooth-bezatramentowa-i-kompaktowa",pin:"linear-gradient(135deg,#0a3d3a,#04040A)",neu:189,old:265,left:"3h 00m",sold:false},
+ {cat:"Aesthetic Tech",name:"Podgrzewana zalotka do rzęs USB – podkręcenie przez 24h",img:"https://a.allegroimg.com/original/1115ad/d49f3d374e43990bdf4c52bdf988/Przenosna-elektryczna-podgrzewana-zalotka-do-rzes-USB-ladowalna-szczoteczka-do-rzes",handle:"podgrzewana-zalotka-do-rzes-usb-podkrecenie-przez-24h",url:"https://ngrfkd-2g.myshopify.com/products/podgrzewana-zalotka-do-rzes-usb-podkrecenie-przez-24h",pin:"linear-gradient(135deg,#3d0a2a,#04040A)",neu:92,old:129,left:"5h 17m",sold:false},
+ {cat:"CleanTok",name:"Żel czyszczący do szczelin i klawiatury – usuwa kurz",img:"https://a.allegroimg.com/original/114b83/96bdae7c4180ac730512e7ae202b/Czyszczenie-klawiatury-Glut-do-usuwania-kurzu-i-brudu-elastyna-zel-czyszcza",handle:"zel-czyszczacy-do-szczelin-i-klawiatury-usuwa-kurz",url:"https://ngrfkd-2g.myshopify.com/products/zel-czyszczacy-do-szczelin-i-klawiatury-usuwa-kurz",pin:"linear-gradient(135deg,#3d2a0a,#04040A)",neu:34,old:47,left:"7h 34m",sold:false}
 ];
 const TESTI=[
  {n:"Kasia W.",t:"Zamówiłam w niedzielę, w wtorek miałam paczkę. Jakość lepsza niż na zdjęciach.",s:5},
@@ -603,7 +596,7 @@ buildTicker();
 /* ════ RENDER PRODUKTÓW ════ */
 const grid=$('[data-products]');
 grid.innerHTML=PRODUCTS.map(p=>`
- <a class="card${p.sold?' is-sold':''}" href="${storeLink(p.url)}" target="_blank" rel="noopener" data-tilt data-hover data-pname="${p.name}" data-phandle="${handleOf(p.url)||''}" aria-label="${p.name} — kup w sklepie">
+ <a class="card${p.sold?' is-sold':''}" href="/produkt/${p.handle||handleOf(p.url)}/" data-tilt data-hover data-pname="${p.name}" data-phandle="${p.handle||handleOf(p.url)}" aria-label="${p.name} — zobacz produkt">
    <div class="card__img" style="background-image:url('${p.img}'),${p.pin}"></div>
    <div class="card__shimmer"></div>
    <div class="card__glow"></div>
