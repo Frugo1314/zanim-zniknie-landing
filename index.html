@@ -116,6 +116,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.04em;line
 /* ════ HERO ════ */
 .hero{position:relative;min-height:100svh;display:grid;align-items:center;overflow:hidden}
 #hero-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0}
+#ambient-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
 .hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
   background:radial-gradient(ellipse at 50% 60%,transparent 30%,var(--void) 92%)}
 .hero__inner{position:relative;z-index:2;padding-top:120px;text-align:center}
@@ -264,6 +265,9 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.04em;line
 </head>
 <body>
 
+<!-- AMBIENT — globalna poświata marki + cząsteczki (łamie czerń, motyw „zanim zniknie") -->
+<canvas id="ambient-canvas" aria-hidden="true"></canvas>
+
 <!-- CURSOR -->
 <div class="cursor-dot" data-cursor-dot></div>
 <div class="cursor-ring" data-cursor-ring></div>
@@ -360,7 +364,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.04em;line
       <div class="why__panel"><span class="why__idx">01 / SELEKCJA</span><div class="why__big grad-text"><span data-countup="0.1">0</span>%</div><p>Z całego rynku przepuszczamy mniej niż jeden na tysiąc produktów. Reszta to szum.</p></div>
       <div class="why__panel"><span class="why__idx">02 / JAKOŚĆ</span><div class="emoji">📦</div><div class="why__big">Testujemy<br>fizycznie.</div><p>Każda sztuka przechodzi przez nasze biuro. Gówno wraca do dostawcy.</p></div>
       <div class="why__panel"><span class="why__idx">03 / WYSYŁKA</span><div class="emoji">🇪🇺</div><div class="why__big">Z EU<br>w 24h.</div><p>Magazyn w Polsce i Niemczech. Nie 30 dni z Chin. Faktura, gwarancja, zwrot 30 dni.</p></div>
-      <div class="why__panel"><span class="why__idx">04 / TIMING</span><div class="why__big grad-text">Zanim<br>TikTok.</div><p>Łapiemy trend na stromej części wzrostu. Ty masz to, zanim algorytm to pokaże.</p></div>
+      <div class="why__panel"><span class="why__idx">04 / TIMING</span><div class="why__big grad-text">Zanim<br>wybuchnie.</div><p>Łapiemy trend na stromej części wzrostu. Masz produkt, zanim algorytm go pokaże — i zanim zniknie.</p></div>
     </div>
   </div>
 </section>
@@ -427,6 +431,50 @@ if(hasST) gsap.registerPlugin(ScrollTrigger);
 const $ = (s,c=document)=>c.querySelector(s);
 const $$ = (s,c=document)=>[...c.querySelectorAll(s)];
 const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+
+/* ════════════════════════════════════════════════════════════════════
+   KONFIG KONWERSJI — wypełnij ID-ki poniżej. Puste = wyłączone (no-op),
+   więc strona działa i jest bezpieczna do wypchnięcia nawet bez ID.
+   ════════════════════════════════════════════════════════════════════ */
+const CFG = {
+  GA4_ID: '',                 // Google Analytics 4, np. 'G-XXXXXXXXXX'
+  TIKTOK_PIXEL_ID: '',        // TikTok Pixel ID (z TikTok Ads/Shop)
+  NEWSLETTER_ENDPOINT: '',    // np. Formspree: 'https://formspree.io/f/xxxxxx'
+  STORE_PUBLIC: 'https://zanim-zniknie.pl' // brandowana baza → 404.html redirectuje do Shopify
+};
+
+/* ── Brandowany, atrybuowany link do produktu (przez shim 404.html) ── */
+const utmFor = (handle, source, medium) =>
+  `${CFG.STORE_PUBLIC}/products/${handle}?utm_source=${source}&utm_medium=${medium}&utm_campaign=zanim_zniknie&utm_content=${encodeURIComponent(handle)}`;
+const handleOf = (url)=>{ const m=String(url||'').match(/\/products\/([^\/?#]+)/); return m?m[1]:null; };
+const storeLink = (url)=>{ const h=handleOf(url); return h ? utmFor(h,'zanim_zniknie','web') : url; };
+
+/* ── Ładowanie pikseli (tylko gdy ID ustawione) ── */
+(function loadAnalytics(){
+  if(CFG.GA4_ID){
+    const s=document.createElement('script');s.async=true;
+    s.src='https://www.googletagmanager.com/gtag/js?id='+CFG.GA4_ID;document.head.appendChild(s);
+    window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments);};
+    gtag('js',new Date());gtag('config',CFG.GA4_ID);
+  }
+  if(CFG.TIKTOK_PIXEL_ID){
+    !function(w,d,t){w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];
+      ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"];
+      ttq.setAndDefer=function(e,n){e[n]=function(){e.push([n].concat([].slice.call(arguments,0)))}};
+      for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);
+      ttq.instance=function(e){for(var n=ttq._i[e]||[],i=0;i<ttq.methods.length;i++)ttq.setAndDefer(n,ttq.methods[i]);return n};
+      ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{};ttq._i[e]=[];ttq._i[e]._u=r;ttq._t=ttq._t||{};ttq._t[e]=+new Date;ttq._o=ttq._o||{};ttq._o[e]=n||{};
+        var s=d.createElement("script");s.type="text/javascript";s.async=!0;s.src=r+"?sdkid="+e+"&lib="+t;var f=d.getElementsByTagName("script")[0];f.parentNode.insertBefore(s,f)};
+      ttq.load(CFG.TIKTOK_PIXEL_ID);ttq.page();
+    }(window,document,'ttq');
+  }
+})();
+
+/* ── Jedno API zdarzeń → GA4 + TikTok Pixel naraz ── */
+function track(ga4Event, params, ttEvent){
+  try{ if(window.gtag) gtag('event', ga4Event, params||{}); }catch(e){}
+  try{ if(window.ttq && ttEvent) ttq.track(ttEvent, params||{}); }catch(e){}
+}
 
 /* ── DANE PRODUKTÓW (do adaptacji pod Shopify) ── */
 /* PRAWDZIWE produkty ze sklepu Shopify (zanim-zniknie.pl) — karty linkują do koszyka */
@@ -519,7 +567,7 @@ buildTicker();
 /* ════ RENDER PRODUKTÓW ════ */
 const grid=$('[data-products]');
 grid.innerHTML=PRODUCTS.map(p=>`
- <a class="card${p.sold?' is-sold':''}" href="${p.url}" target="_blank" rel="noopener" data-tilt data-hover aria-label="${p.name} — kup w sklepie">
+ <a class="card${p.sold?' is-sold':''}" href="${storeLink(p.url)}" target="_blank" rel="noopener" data-tilt data-hover data-pname="${p.name}" data-phandle="${handleOf(p.url)||''}" aria-label="${p.name} — kup w sklepie">
    <div class="card__img" style="background-image:url('${p.img}'),${p.pin}"></div>
    <div class="card__shimmer"></div>
    <div class="card__glow"></div>
@@ -546,6 +594,11 @@ $$('.card[data-tilt]').forEach(card=>{
     });
   }
   card.addEventListener('pointerenter',e=>burst(e.clientX,e.clientY));
+  // atrybucja: które produkty klika ruch (GA4 select_item + TikTok ClickButton)
+  card.addEventListener('click',()=>{
+    const name=card.dataset.pname||'', handle=card.dataset.phandle||'';
+    track('select_item',{item_name:name, item_id:handle, content_name:name, content_type:'product'}, 'ClickButton');
+  });
 });
 
 /* ════ HERO HEADLINE — własny SplitText (słowa) ════ */
@@ -621,6 +674,43 @@ function initHero(){
   anim();
 }
 
+/* ════ AMBIENT — globalna poświata marki + dryfujące cząsteczki ════
+   Łamie dominację czerni na CAŁEJ stronie (fixed, za treścią) i niesie
+   vibe „latających kulek" poza hero. Cząsteczki pojawiają się i znikają
+   = motyw marki „zanim zniknie". GPU-lekkie, pauzuje przy ukrytej karcie. */
+function initAmbient(){
+  const canvas=$('#ambient-canvas'); if(!canvas) return;
+  if(reduce){ canvas.style.background='radial-gradient(ellipse at 20% 12%,rgba(0,255,178,.07),transparent 45%),radial-gradient(ellipse at 85% 82%,rgba(255,45,120,.06),transparent 45%)'; return; }
+  const ctx=canvas.getContext('2d'); let w,h; const dpr=Math.min(devicePixelRatio,1.5);
+  function size(){w=canvas.width=innerWidth*dpr;h=canvas.height=innerHeight*dpr;canvas.style.width=innerWidth+'px';canvas.style.height=innerHeight+'px';}
+  size(); addEventListener('resize',size,{passive:true});
+  const blobs=[{c:'0,255,178',sp:.00006,ph:0,a:.10},{c:'255,45,120',sp:.00008,ph:2.2,a:.08},{c:'0,255,178',sp:.00005,ph:4.1,a:.05}];
+  const N=touch?20:44, ps=[];
+  const spawn=()=>({x:Math.random()*w, y:h+Math.random()*h*.25, r:(Math.random()*1.5+.4)*dpr, vy:-(Math.random()*.22+.06)*dpr, life:0, max:Math.random()*420+260, mint:Math.random()>.42});
+  for(let i=0;i<N;i++){const p=spawn();p.life=Math.random()*p.max;ps.push(p);}
+  let run=true; document.addEventListener('visibilitychange',()=>{run=!document.hidden;if(run)draw();});
+  function draw(){
+    if(!run)return; const t=performance.now();
+    ctx.clearRect(0,0,w,h);
+    blobs.forEach(b=>{
+      const x=(.5+Math.cos(t*b.sp+b.ph)*.4)*w, y=(.5+Math.sin(t*b.sp*1.25+b.ph)*.4)*h;
+      const g=ctx.createRadialGradient(x,y,0,x,y,Math.max(w,h)*.55);
+      g.addColorStop(0,`rgba(${b.c},${b.a})`); g.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=g; ctx.fillRect(0,0,w,h);
+    });
+    ps.forEach((p,i)=>{
+      p.life++; p.y+=p.vy; p.x+=Math.sin(t*.0003+i)*.15*dpr;
+      if(p.life>=p.max || p.y<-10){Object.assign(p,spawn()); return;}
+      const alpha=Math.sin(Math.min(1,p.life/p.max)*Math.PI)*.5; // 0 → szczyt → 0 (zniknie)
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.mint?`rgba(0,255,178,${alpha})`:`rgba(255,45,120,${alpha*.8})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
 /* ════ GENERIC mesh-gradient canvas (newsletter + footer) ════ */
 function meshGradient(canvas,opacity){
   if(!canvas||reduce){if(canvas)canvas.style.background='radial-gradient(circle at 30% 30%,rgba(0,255,178,.1),transparent 50%),radial-gradient(circle at 70% 70%,rgba(255,45,120,.1),transparent 50%)';return;}
@@ -658,7 +748,22 @@ function confetti(){for(let i=0;i<120;i++){parts.push({x:innerWidth/2,y:innerHei
 (function cfLoop(){cfx.clearRect(0,0,cfCanvas.width,cfCanvas.height);parts=parts.filter(p=>p.life>0);parts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=(p.g||.08);p.life-=.016;cfx.globalAlpha=Math.max(0,p.life);cfx.fillStyle=`rgb(${p.c})`;cfx.fillRect(p.x,p.y,p.s,p.s);});cfx.globalAlpha=1;requestAnimationFrame(cfLoop);})();
 
 /* ════ NEWSLETTER submit ════ */
-$('[data-nl]').addEventListener('submit',e=>{e.preventDefault();const inp=$('input',e.target);if(!inp.value||!inp.value.includes('@')){inp.focus();return;}confetti();$('[data-nl-success]').classList.add('show');inp.value='';});
+$('[data-nl]').addEventListener('submit',e=>{
+  e.preventDefault();
+  const form=e.target, inp=$('input',form), email=(inp.value||'').trim();
+  if(!email||!email.includes('@')){inp.focus();return;}
+  const done=()=>{confetti();$('[data-nl-success]').classList.add('show');inp.value='';
+    track('newsletter_signup',{method:'landing'},'CompleteRegistration');};
+  if(CFG.NEWSLETTER_ENDPOINT){
+    fetch(CFG.NEWSLETTER_ENDPOINT,{method:'POST',headers:{'Accept':'application/json','Content-Type':'application/json'},
+      body:JSON.stringify({email, source:'zanim-zniknie.pl', ts:new Date().toISOString()})})
+      .then(r=>{ if(!r.ok) throw new Error('nl '+r.status); done(); })
+      .catch(err=>{ console.warn('[newsletter]', err); done(); }); // UX: nie blokuj usera, ale loguj
+  } else {
+    console.warn('[newsletter] CFG.NEWSLETTER_ENDPOINT pusty — mail NIE jest nigdzie zapisywany');
+    done();
+  }
+});
 
 /* ════ GSAP reveals + horizontal pin ════ */
 function initGSAP(){
@@ -703,6 +808,7 @@ function runLoader(){
     if(p<1){requestAnimationFrame(step);}else{loader.classList.add('is-done');start();}})();
 }
 function start(){
+  initAmbient();
   initHero();
   meshGradient($('#mesh-canvas'),.6);
   meshGradient($('#footer-canvas'),.4);
