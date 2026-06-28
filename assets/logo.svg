@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 120" width="600" height="120" role="img" aria-label="Zanim Zniknie">
+  <style>
+    .w { font-family:"Inter","Segoe UI",system-ui,Arial,sans-serif; font-weight:800; font-size:56px; letter-spacing:-1.5px; }
+    .a { fill:#EAF6F0; }
+    .b { fill:#00FFB2; }
+  </style>
+  <text x="24" y="76" class="w"><tspan class="a">zanim </tspan><tspan class="b">zniknie</tspan></text>
+  <!-- motyw ulotności: słowo rozpływa się w znikających kropkach -->
+  <g class="b">
+    <circle cx="486" cy="58" r="7"   opacity="0.9"/>
+    <circle cx="512" cy="58" r="5"   opacity="0.5"/>
+    <circle cx="533" cy="58" r="3"   opacity="0.25"/>
+    <circle cx="549" cy="58" r="1.6" opacity="0.12"/>
+  </g>
+</svg>

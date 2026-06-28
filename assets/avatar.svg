@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400" role="img" aria-label="Zanim Zniknie">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="38%" r="75%">
+      <stop offset="0%" stop-color="#0A1A14"/>
+      <stop offset="100%" stop-color="#04040A"/>
+    </radialGradient>
+    <filter id="g" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <rect width="400" height="400" rx="92" fill="url(#bg)"/>
+  <rect x="6" y="6" width="388" height="388" rx="88" fill="none" stroke="#00FFB2" stroke-opacity="0.28" stroke-width="2"/>
+  <!-- monogram zz: drugie z znika -->
+  <g font-family="Inter,Segoe UI,system-ui,Arial,sans-serif" font-weight="800" filter="url(#g)">
+    <text x="118" y="238" font-size="190" fill="#00FFB2">z</text>
+    <text x="214" y="238" font-size="190" fill="#00FFB2" opacity="0.38">z</text>
+  </g>
+  <!-- znikające kropki -->
+  <g fill="#00FFB2">
+    <circle cx="300" cy="150" r="6" opacity="0.6"/>
+    <circle cx="322" cy="150" r="4" opacity="0.3"/>
+    <circle cx="339" cy="150" r="2.4" opacity="0.14"/>
+  </g>
+  <text x="200" y="320" text-anchor="middle" font-family="Inter,Segoe UI,system-ui,Arial,sans-serif"
+        font-weight="700" font-size="30" letter-spacing="7" fill="#EAF6F0">ZANIM ZNIKNIE</text>
+</svg>
